@@ -1,18 +1,18 @@
-import FilmCard, { FilmCardProps } from '../film-card/film-card';
+import FilmCard, { Film } from '../film-card/film-card';
 
 export type FilmsListPropsType = {
-  films: FilmCardProps[]
+  films: Film[]
 }
 
 export default function FilmList({ films }: FilmsListPropsType): JSX.Element {
 
   return (
     <div className="catalog__films-list">
-      {films.map((film: FilmCardProps) => (
+      {films.map((film: Film) => (
         <FilmCard
           {...film}
-          key={film.films.id}
-          film={film}
+          key={film.id}
+          films={film}
         />
       ))}
     </div>

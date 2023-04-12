@@ -6,16 +6,14 @@ import { Redirect } from 'react-router';
 
 type MatchParams = {
   id: string;
-}
+};
 
 function Player({ match }: RouteComponentProps<MatchParams>): JSX.Element {
-
   const { id } = match.params;
-
   const currentFilm = fakeFilms[+id];
 
   if (!currentFilm) {
-    return <Redirect to='/' />;
+    return <Redirect to="/" />;
   }
 
   const playerStyles = {
@@ -25,14 +23,17 @@ function Player({ match }: RouteComponentProps<MatchParams>): JSX.Element {
   return (
     <div className="player">
       <video src={currentFilm.videoLink} className="player__video" poster="img/player-poster.jpg"></video>
-
-      <Link to={AppRoute.Main} type="button" className="player__exit">Exit</Link>
+      <Link to={AppRoute.Main} type="button" className="player__exit">
+        Exit
+      </Link>
 
       <div className="player__controls">
         <div className="player__controls-row">
           <div className="player__time">
             <progress className="player__progress" value="30" max="100"></progress>
-            <div className="player__toggler" style={playerStyles}>Toggler</div>
+            <div className="player__toggler" style={playerStyles}>
+              Toggler
+            </div>
           </div>
           <div className="player__time-value">1:30:29</div>
         </div>

@@ -6,9 +6,9 @@ import FilmList from '../film-list/film-list';
 
 type MyListProps = {
   films: Film[];
-}
+};
 
-function MyList({films}:MyListProps):JSX.Element {
+function MyList({ films }: MyListProps): JSX.Element {
   return (
     <div className="user-page">
       <header className="page-header film-card__head">
@@ -23,11 +23,18 @@ function MyList({films}:MyListProps):JSX.Element {
         <ul className="user-block">
           <li className="user-block__item">
             <div className="user-block__avatar">
-              <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
+              <img
+                src="img/avatar.jpg"
+                alt="User avatar"
+                width="63"
+                height="63"
+              />
             </div>
           </li>
           <li className="user-block__item">
-            <Link to={AppRoute.MyList} className="user-block__link">Sign out</Link>
+            <Link to={AppRoute.MyList} className="user-block__link">
+              Sign out
+            </Link>
           </li>
         </ul>
       </header>
@@ -36,7 +43,6 @@ function MyList({films}:MyListProps):JSX.Element {
         <h2 className="catalog__title visually-hidden">Catalog</h2>
 
         <FilmList films={films} />
-
       </section>
 
       <footer className="page-footer">

@@ -1,7 +1,22 @@
 import React from 'react';
+import { Link, RouteComponentProps } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { fakeFilms } from '../../mocks/films';
+import { Redirect } from 'react-router';
 
+type MatchParams = {
+  id: string;
+}
 
-function Player(): JSX.Element {
+function Player({ match }: RouteComponentProps<MatchParams>): JSX.Element {
+
+  const { id } = match.params;
+
+  const currentFilm = fakeFilms[+id];
+
+  if (!currentFilm) {
+    return <Redirect to='/' />;
+  }
 
   const playerStyles = {
     left: '30%',
@@ -9,9 +24,9 @@ function Player(): JSX.Element {
 
   return (
     <div className="player">
-      <video src="#" className="player__video" poster="img/player-poster.jpg"></video>
+      <video src={currentFilm.videoLink} className="player__video" poster="img/player-poster.jpg"></video>
 
-      <button type="button" className="player__exit">Exit</button>
+      <Link to={AppRoute.Main} type="button" className="player__exit">Exit</Link>
 
       <div className="player__controls">
         <div className="player__controls-row">
@@ -21,7 +36,6 @@ function Player(): JSX.Element {
           </div>
           <div className="player__time-value">1:30:29</div>
         </div>
-
         <div className="player__controls-row">
           <button type="button" className="player__play">
             <svg viewBox="0 0 19 19" width="19" height="19">
@@ -30,7 +44,6 @@ function Player(): JSX.Element {
             <span>Play</span>
           </button>
           <div className="player__name">Transpotting</div>
-
           <button type="button" className="player__full-screen">
             <svg viewBox="0 0 27 27" width="27" height="27">
               <use xlinkHref="#full-screen"></use>
@@ -42,5 +55,4 @@ function Player(): JSX.Element {
     </div>
   );
 }
-
 export default Player;

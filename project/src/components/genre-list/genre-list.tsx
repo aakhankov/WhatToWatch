@@ -1,65 +1,45 @@
 import { Film } from '../film-card/film-card';
-import { Genres } from '../../const';
-import { changeGenre, filterFilms } from '../../store/action';
-import { Actions } from '../reducer/action';
+import { changeGenre } from '../../store/action';
 import { State } from '../reducer/reducer';
-import { Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Genres } from '../../const';
 
 export type GenreListProps = {
   films: Film[];
 };
 
-const mapStateToProps = ({ currentGenre }: State) => ({
-  currentGenre,
-});
+type ConnectedGenreListProps = GenreListProps;
 
-const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  onChangeGenre(genre: string) {
-    dispatch(changeGenre(genre));
-  },
-  onFilterFilms(films: Film[]) {
-    dispatch(filterFilms(films));
-  },
-});
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedGenreListProps = PropsFromRedux & GenreListProps;
-
-function GenreList({
+export default function GenreList({
   films,
-  onChangeGenre,
-  onFilterFilms,
-  currentGenre,
 }: ConnectedGenreListProps): JSX.Element {
-  const genres = [Genres.All, ...new Set(films.map((film) => film.genre))];
+  const dispatch = useDispatch();
+  const filmList = useSelector((state: State) => state.currentFilm);
+  const currentGenre = useSelector((state: State) => state.currentGenre);
+  const genres = [
+    Genres.All,
+    ...new Set(filmList.map((it) => it.genre)),
+  ] as string[];
+
+  function onChangeGenre(genre: string) {
+    genre === 'All genres' && dispatch(changeGenre(genre));
+  }
 
   return (
     <ul className="catalog__genres-list">
-      <li className="catalog__genres-item catalog__genres-item--active">
-        <a href="/" className="catalog__genres-link">
-          All genres
-        </a>
-      </li>
-
       {genres.map((genre) => (
         <li
-          key={genre}
           className={`catalog__genres-item ${
-            currentGenre === genre && 'catalog__genres-item--active'
+            genre === currentGenre && 'catalog__genres-item--active'
           }`}
+          key={genre}
+          onClick={(evt) => {
+            evt.preventDefault();
+            onChangeGenre(genre);
+            dispatch(changeGenre(genre));
+          }}
         >
-          <a
-            href="/"
-            className="catalog__genres-link"
-            onClick={(evt) => {
-              evt.preventDefault();
-              onChangeGenre(genre);
-              onFilterFilms(films);
-            }}
-          >
+          <a href="/" className="catalog__genres-link">
             {genre}
           </a>
         </li>
@@ -67,5 +47,3 @@ function GenreList({
     </ul>
   );
 }
-
-export default connector(GenreList);

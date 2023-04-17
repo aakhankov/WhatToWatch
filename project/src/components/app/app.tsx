@@ -2,7 +2,6 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import  { Film } from '../film-card/film-card';
 import { FilmReviewProps } from '../tab-reviews/tab-reviews';
-
 import Main from '../main/main';
 import AddReview from '../add-review/add-review';
 import MyList from '../my-list/my-list';
@@ -11,9 +10,9 @@ import SignIn from '../sign-in/sign-in';
 import Error from '../error/error';
 import FilmPage from '../film/film';
 import PrivateRoute from '../private-route/private-route';
+
 type AppProps = {
   films: Array<Film>,
-  //currentGenre: Film[],
   reviews: FilmReviewProps[];
 }
 
@@ -24,7 +23,6 @@ function App({films, reviews }: AppProps): JSX.Element {
         <Route path={AppRoute.Main} exact>
           <Main
             films={films}
-            // currentGenre={currentGenre}
           />
         </Route>
 

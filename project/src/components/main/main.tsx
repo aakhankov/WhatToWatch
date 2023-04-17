@@ -1,27 +1,38 @@
 import React from 'react';
-// import FilmCard from '../film-card/film-card';
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const';
 import { Film } from '../film-card/film-card';
-
+import GenreList from '../genre-list/genre-list';
 import FilmList from '../film-list/film-list';
+
+import { connect, ConnectedProps } from 'react-redux';
+
+import { State } from '../reducer/reducer';
 
 export type MainProps = {
   films: Film[];
-  currentFilm: Film;
+  // currentGenre: Film[];
 };
 
-function Main(props: MainProps): JSX.Element {
-  const { currentFilm, films } = props;
+const mapStateToProps = ({ currentFilm }: State) => ({
+  currentFilm,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type ConnectedMainProps = PropsFromRedux & MainProps;
+
+function Main({ films, currentFilm }: ConnectedMainProps): JSX.Element {
+  const { id, name, genre, released, posterImage, backgroundImage } = films[0];
+
   return (
     <React.Fragment>
       <section className="film-card">
         <div className="film-card__bg">
-          <img src={currentFilm.backgroundImage} alt={currentFilm.name} />
+          <img src={backgroundImage} alt={name} />
         </div>
 
         <h1 className="visually-hidden">WTW</h1>
-
         <header className="page-header film-card__head">
           <div className="logo">
             <Link to={AppRoute.Main} className="logo__link">
@@ -30,7 +41,6 @@ function Main(props: MainProps): JSX.Element {
               <span className="logo__letter logo__letter--3">W</span>
             </Link>
           </div>
-
           <ul className="user-block">
             <li className="user-block__item">
               <div className="user-block__avatar">
@@ -53,22 +63,22 @@ function Main(props: MainProps): JSX.Element {
           <div className="film-card__info">
             <div className="film-card__poster">
               <img
-                src={currentFilm.posterImage}
-                alt={`${currentFilm.name} poster`}
+                src={posterImage}
+                alt={`${name} poster`}
                 width="218"
                 height="327"
               />
             </div>
 
             <div className="film-card__desc">
-              <h2 className="film-card__title">{currentFilm.name}</h2>
+              <h2 className="film-card__title">{name}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">{currentFilm.genre}</span>
-                <span className="film-card__year">{currentFilm.released}</span>
+                <span className="film-card__genre">{genre}</span>
+                <span className="film-card__year">{released}</span>
               </p>
 
               <div className="film-card__buttons">
-                <Link to={`/player/${currentFilm.id}`}>
+                <Link to={`/player/${id}`}>
                   <button
                     className="btn btn--play film-card__button"
                     type="button"
@@ -97,58 +107,7 @@ function Main(props: MainProps): JSX.Element {
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
 
-          <ul className="catalog__genres-list">
-            <li className="catalog__genres-item catalog__genres-item--active">
-              <a href="/" className="catalog__genres-link">
-                All genres
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Comedies
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Crime
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Documentary
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Dramas
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Horror
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Kids & Family
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Romance
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Sci-Fi
-              </a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="/" className="catalog__genres-link">
-                Thrillers
-              </a>
-            </li>
-          </ul>
+          <GenreList films={currentFilm} />
 
           <FilmList films={films} />
 
@@ -158,7 +117,6 @@ function Main(props: MainProps): JSX.Element {
             </button>
           </div>
         </section>
-
         <footer className="page-footer">
           <div className="logo">
             <Link to={AppRoute.Main} className="logo__link logo__link--light">
@@ -167,7 +125,6 @@ function Main(props: MainProps): JSX.Element {
               <span className="logo__letter logo__letter--3">W</span>
             </Link>
           </div>
-
           <div className="copyright">
             <p>© 2019 What to watch Ltd.</p>
           </div>
@@ -176,4 +133,5 @@ function Main(props: MainProps): JSX.Element {
     </React.Fragment>
   );
 }
-export default Main;
+
+export default connector(Main);

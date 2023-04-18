@@ -1,24 +1,29 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { AppRoute, Genres, DEFAULT_SIZE, FILM_CARD_COUNT, AuthorizationStatus } from '../../const';
+import { AppRoute, Genres, DEFAULT_SIZE, FILM_CARD_COUNT, AuthorizationStatus} from '../../const';
 import { Film } from '../film-card/film-card';
 import GenreList from '../genre-list/genre-list';
 import FilmList from '../film-list/film-list';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/reducer';
+
 import ShowMore from '../show-more/show-more';
 import { useState } from 'react';
+import Loading from '../loading/loading';
+
 export type MainProps = {
   films: Film[];
 };
-
-const mapStateToProps = ({currentFilms, currentGenre, authorizationStatus}: State) => ({
+const mapStateToProps = ({
+  currentFilms,
+  currentGenre,
+  authorizationStatus,
+}: State) => ({
   currentFilms,
   currentGenre,
   authorizationStatus,
 });
-
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type ConnectedMainProps = PropsFromRedux & MainProps;
@@ -29,9 +34,8 @@ function Main({
   currentGenre,
   authorizationStatus,
 }: ConnectedMainProps): JSX.Element {
-  const { name, genre, released, poster_image, background_image } =
-    currentFilms[0];
   const [showSize, setShowSize] = useState(DEFAULT_SIZE);
+
   const filmList = films
     .filter((film) => {
       if (currentGenre === Genres.All) {
@@ -44,6 +48,13 @@ function Main({
   const handleShowMoreClick = () => {
     setShowSize(() => showSize + 1);
   };
+
+  if (!films.length) {
+    return <Loading />;
+  }
+
+  const { name, genre, released, poster_image, background_image } = films[0];
+
   return (
     <React.Fragment>
       <section className="film-card">
@@ -59,7 +70,6 @@ function Main({
               <span className="logo__letter logo__letter--3">W</span>
             </Link>
           </div>
-
           <ul className="user-block">
             {authorizationStatus === AuthorizationStatus.Auth ? (
               <React.Fragment>
@@ -74,8 +84,8 @@ function Main({
                   </div>
                 </li>
                 <li className="user-block__item">
-                  <Link className="user-block__link" to="#">
-                    user@mail.com
+                  <Link className="user-block__link" to={AppRoute.MyList}>
+                    user@gmail.com
                   </Link>
                 </li>
               </React.Fragment>
@@ -88,7 +98,6 @@ function Main({
             )}
           </ul>
         </header>
-
         <div className="film-card__wrap">
           <div className="film-card__info">
             <div className="film-card__poster">

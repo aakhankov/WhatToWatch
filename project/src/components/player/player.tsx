@@ -1,18 +1,19 @@
 import React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import { fakeFilms } from '../../mocks/films';
-import { Redirect } from 'react-router';
+import { FilmProps } from '../film-card/film-card';
+import { Redirect, useParams } from 'react-router';
 
-type MatchParams = {
-  id: string;
+type AddReviewProps = {
+  films: FilmProps[];
 };
 
-function Player({ match }: RouteComponentProps<MatchParams>): JSX.Element {
-  const { id } = match.params;
-  const currentFilm = fakeFilms[+id];
+function Player({ films }: AddReviewProps): JSX.Element {
+  const { id }: { id: string } = useParams();
 
-  if (!currentFilm) {
+  const currentFilms = films.find((film) => film.id === Number(id));
+
+  if (!currentFilms) {
     return <Redirect to="/" />;
   }
 
@@ -22,7 +23,8 @@ function Player({ match }: RouteComponentProps<MatchParams>): JSX.Element {
 
   return (
     <div className="player">
-      <video src={currentFilm.videoLink} className="player__video" poster="img/player-poster.jpg"></video>
+      <video src={currentFilms.videoLink} className="player__video" poster="img/player-poster.jpg"></video>
+
       <Link to={AppRoute.Main} type="button" className="player__exit">
         Exit
       </Link>

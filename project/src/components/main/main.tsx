@@ -1,22 +1,22 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { AppRoute, Genres, DEFAULT_SIZE, FILM_CARD_COUNT } from '../../const';
+import { AppRoute, Genres, DEFAULT_SIZE, FILM_CARD_COUNT, AuthorizationStatus } from '../../const';
 import { Film } from '../film-card/film-card';
 import GenreList from '../genre-list/genre-list';
 import FilmList from '../film-list/film-list';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/reducer';
-
 import ShowMore from '../show-more/show-more';
 import { useState } from 'react';
 export type MainProps = {
   films: Film[];
 };
 
-const mapStateToProps = ({ currentFilms, currentGenre }: State) => ({
+const mapStateToProps = ({currentFilms, currentGenre, authorizationStatus}: State) => ({
   currentFilms,
   currentGenre,
+  authorizationStatus,
 });
 
 const connector = connect(mapStateToProps);
@@ -27,10 +27,10 @@ function Main({
   films,
   currentFilms,
   currentGenre,
+  authorizationStatus,
 }: ConnectedMainProps): JSX.Element {
   const { name, genre, released, poster_image, background_image } =
     currentFilms[0];
-
   const [showSize, setShowSize] = useState(DEFAULT_SIZE);
   const filmList = films
     .filter((film) => {
@@ -50,7 +50,6 @@ function Main({
         <div className="film-card__bg">
           <img src={background_image} alt={name} />
         </div>
-
         <h1 className="visually-hidden">WTW</h1>
         <header className="page-header film-card__head">
           <div className="logo">
@@ -60,24 +59,36 @@ function Main({
               <span className="logo__letter logo__letter--3">W</span>
             </Link>
           </div>
+
           <ul className="user-block">
-            <li className="user-block__item">
-              <div className="user-block__avatar">
-                <img
-                  src="img/avatar.jpg"
-                  alt="User avatar"
-                  width="63"
-                  height="63"
-                />
-              </div>
-            </li>
-            <li className="user-block__item">
-              <Link to={AppRoute.MyList} className="user-block__link">
-                Sign out
-              </Link>
-            </li>
+            {authorizationStatus === AuthorizationStatus.Auth ? (
+              <React.Fragment>
+                <li className="user-block__item">
+                  <div className="user-block__avatar">
+                    <img
+                      src="img/avatar.jpg"
+                      alt="User avatar"
+                      width="63"
+                      height="63"
+                    />
+                  </div>
+                </li>
+                <li className="user-block__item">
+                  <Link className="user-block__link" to="#">
+                    user@mail.com
+                  </Link>
+                </li>
+              </React.Fragment>
+            ) : (
+              <li className="user-block__item">
+                <Link className="user-block__link" to={AppRoute.SignIn}>
+                  Sign in
+                </Link>
+              </li>
+            )}
           </ul>
         </header>
+
         <div className="film-card__wrap">
           <div className="film-card__info">
             <div className="film-card__poster">
@@ -88,14 +99,12 @@ function Main({
                 height="327"
               />
             </div>
-
             <div className="film-card__desc">
               <h2 className="film-card__title">{name}</h2>
               <p className="film-card__meta">
                 <span className="film-card__genre">{genre}</span>
                 <span className="film-card__year">{released}</span>
               </p>
-
               <div className="film-card__buttons">
                 <button
                   className="btn btn--play film-card__button"
@@ -123,14 +132,11 @@ function Main({
       <div className="page-content">
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
-
           <GenreList
             films={currentFilms}
             resetGenre={() => setShowSize(DEFAULT_SIZE)}
           />
-
           <FilmList films={filmList} />
-
           {filmList.length === shownFilms.length && (
             <ShowMore onClick={handleShowMoreClick} />
           )}

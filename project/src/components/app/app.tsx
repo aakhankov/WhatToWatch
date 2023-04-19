@@ -1,7 +1,6 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import type { State } from '../../store/reducer';
-import { connect, ConnectedProps } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Main from '../main/main';
 import AddReview from '../add-review/add-review';
@@ -11,43 +10,30 @@ import SignIn from '../sign-in/sign-in';
 import Error from '../error/error';
 import FilmPage from '../film/film';
 import PrivateRoute from '../private-route/private-route';
-// import Loading from '../loading/loading';
 
-const mapStateToProps = ({
-  currentFilms,
-  isDataLoaded,
-  authorizationStatus,
-}: State) => ({
-  currentFilms,
-  isDataLoaded,
-  authorizationStatus,
-});
-const connector = connect(mapStateToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
+import { getCurrentFilm, getCurrentGenre } from '../../store/selectors';
 
-function App({
-  currentFilms,
-  isDataLoaded,
-  authorizationStatus,
-}: PropsFromRedux): JSX.Element {
-  // eslint-disable-next-line no-console
-  console.log(authorizationStatus);
+export default function App(): JSX.Element {
+  const currentFilms = useSelector(getCurrentFilm);
+  const currentGenre = useSelector(getCurrentGenre);
+  // const isDataLoaded = useSelector(getIsDataLoaded);
+  // const authorizationStatus = useSelector(getAuthorizationStatus);
 
-  // if (authorizationStatus === AuthorizationStatus.NoAuth || !isDataLoaded) {
-  //   return <Loading />;
+  // if (authorizationStatus === AuthorizationStatus.Unknown || !isDataLoaded) {
+  //   return (
+  //     <Loading />
+  //   );
   // }
 
   return (
     <BrowserRouter>
       <Switch>
         <Route path={AppRoute.Main} exact>
-          <Main films={currentFilms} />
+          <Main films={currentFilms} currentGenre={currentGenre} />
         </Route>
 
         <Route path={AppRoute.Film} exact component={FilmPage} />
-
         <Route path={AppRoute.AddReview} exact component={AddReview} />
-
         <Route path={AppRoute.Player} exact component={Player} />
         <Route path={AppRoute.SignIn} exact>
           <SignIn />
@@ -55,11 +41,7 @@ function App({
         <PrivateRoute exact path={AppRoute.MyList}>
           <MyList films={currentFilms} />
         </PrivateRoute>
-        {/* <PrivateRoute exact path={AppRoute.MyList}
-          render={() => <MyList films={currentFilms} />}
-          // authorizationStatus={AuthorizationStatus.NoAuth}
-        >
-        </PrivateRoute> */}
+
         <Route>
           <Error />
         </Route>
@@ -67,4 +49,3 @@ function App({
     </BrowserRouter>
   );
 }
-export default connector(App);

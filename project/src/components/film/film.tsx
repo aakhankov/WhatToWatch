@@ -1,20 +1,21 @@
 /* eslint-disable camelcase */
-import React, { useState } from 'react';
-// import { Redirect } from 'react-router';
-import { connect, ConnectedProps } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { Film } from '../film-card/film-card';
 import TabReviews, { FilmReviewProps } from '../tabs/tab-reviews/tab-reviews';
-import { fetchFilmsAction, fetchReviewsAction, fetchSimilarFilmsAction, ThunkAppDispatch } from '../../store/actions-api';
-import { State } from '../../store/reducer';
+import { fetchFilmsAction } from '../../store/actions-api';
 import SimilarFilms from './similar-films';
 
 import TabDetails from '../tabs/tab-details/tab-details';
 import TabOverview from '../tabs/tab-overview/tab-overview';
 import Loading from '../loading/loading';
 import Error from '../error/error';
+import UserBlock from '../user-block/user-block';
+
+import { getAuthorizationStatus, getCurrentFilm, getReviews, getSimilarFilms, getSimilarFilmsLoading} from '../../store/selectors';
 
 export type FilmOverviewProps = {
   films: Film[];
@@ -22,70 +23,42 @@ export type FilmOverviewProps = {
   id: number;
 };
 
-const mapStateToProps = ({ currentFilms, similarFilms, similarFilmsLoading, reviews, isReviewsLoaded, authorizationStatus}: State) => ({
-  currentFilms,
-  similarFilms,
-  similarFilmsLoading,
-  reviews,
-  isReviewsLoaded,
-  authorizationStatus,
-});
+export default function FilmPage(): JSX.Element {
+  const currentFilms = useSelector(getCurrentFilm);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const reviews = useSelector(getReviews);
+  const similarFilms = useSelector(getSimilarFilms);
+  const similarFilmsLoading = useSelector(getSimilarFilmsLoading);
+  const dispatch = useDispatch();
 
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  getCurrentFilm(id: number) {
+  const getFilm = (currentFilmId: number) => {
     dispatch(fetchFilmsAction());
-  },
-  getSimilarFilms(id: number) {
-    dispatch(fetchSimilarFilmsAction(id));
-  },
-  getReviews(id: number) {
-    dispatch(fetchReviewsAction(id));
-  },
-});
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedFilmProps = PropsFromRedux & FilmOverviewProps;
-
-function FilmPage({
-  reviews,
-  currentFilms,
-  getCurrentFilm,
-  similarFilms,
-  similarFilmsLoading,
-  getSimilarFilms,
-  isReviewsLoaded,
-  getReviews,
-  authorizationStatus,
-}: ConnectedFilmProps): JSX.Element {
-  const history = useHistory();
+  };
 
   const { id }: { id: string } = useParams();
-
-  const [activeTab, setActiveTab] = useState('Overview');
-
+  const filmId = Number(id);
   const currentMovie = currentFilms.find((film) => film.id === Number(id));
 
-  const filmId = Number(id);
+  useEffect(() => {
+    if (currentMovie?.id !== filmId) {
+      getFilm(filmId);
+    }
+  });
+
+  const history = useHistory();
+
+  const [activeTab, setActiveTab] = useState('Overview');
 
   if (!currentMovie) {
     return <Error />;
   }
 
   if (currentMovie?.id !== filmId) {
-    getCurrentFilm(filmId);
     return <Loading />;
-  }
-
-  if (!similarFilmsLoading && !isReviewsLoaded) {
-    getSimilarFilms(filmId);
-    getReviews(filmId);
   }
 
   const { name, background_image, genre, released, poster_image } =
     currentMovie as Film;
-
   const renderActiveTab = (tab: string) => {
     switch (tab) {
       case 'Overview':
@@ -96,7 +69,6 @@ function FilmPage({
         return <TabReviews reviews={reviews} />;
     }
   };
-
   return (
     <React.Fragment>
       <section className="film-card film-card--full">
@@ -113,24 +85,10 @@ function FilmPage({
                 <span className="logo__letter logo__letter--3">W</span>
               </Link>
             </div>
-            <ul className="user-block">
-              <li className="user-block__item">
-                <div className="user-block__avatar">
-                  <img
-                    src="img/avatar.jpg"
-                    alt="User avatar"
-                    width="63"
-                    height="63"
-                  />
-                </div>
-              </li>
-              <li className="user-block__item">
-                <Link to={AppRoute.MyList} className="user-block__link">
-                  Sign out
-                </Link>
-              </li>
-            </ul>
+
+            <UserBlock />
           </header>
+
           <div className="film-card__wrap">
             <div className="film-card__desc">
               <h2 className="film-card__title">{name}</h2>
@@ -235,10 +193,8 @@ function FilmPage({
           <h2 className="catalog__title">
             {similarFilms.length > 0 && 'More like this'}
           </h2>
-
           {similarFilmsLoading ? <SimilarFilms /> : <Loading />}
         </section>
-
         <footer className="page-footer">
           <div className="logo">
             <Link to={AppRoute.Main} className="logo__link logo__link--light">
@@ -255,5 +211,3 @@ function FilmPage({
     </React.Fragment>
   );
 }
-
-export default connector(FilmPage);

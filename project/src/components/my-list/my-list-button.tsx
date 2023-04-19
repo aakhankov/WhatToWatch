@@ -1,34 +1,30 @@
+import { MouseEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { memo, useEffect, useState } from 'react';
 import { setFavoriteAction } from '../../store/actions-api';
-import { getAuthorizationStatus, getCurrentFilm } from '../../store/selectors';
+import { getAuthorizationStatus } from '../../store/selectors';
 import { AppRoute, AuthorizationStatus, FavoriteFilms } from '../../const';
-import { useParams } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { Film } from '../film-card/film-card';
 
-export default function MyListButton(): JSX.Element {
-  const currentFilms = useSelector(getCurrentFilm);
-  const { id }: { id: string } = useParams();
-  const filmId = Number(id);
-  const currentMovie = currentFilms.find((films) => films.id === Number(id));
-
+function MyListButton({ film }: { film: Film }): JSX.Element {
   const authorizationStatus = useSelector(getAuthorizationStatus);
-  const [isInFavoriteList, setIsInFavoriteList] = useState(currentMovie?.is_favorite);
-  const history = useHistory();
+  const [isInFavoriteList, setIsInFavoriteList] = useState(film.is_favorite);
   const dispatch = useDispatch();
 
-  useEffect(() => setIsInFavoriteList(currentMovie?.is_favorite),[currentMovie]);
+  useEffect(() => setIsInFavoriteList(film.is_favorite), [film]);
 
-  const handleFavoriteClick = () => {
-    if (authorizationStatus === AuthorizationStatus.Auth) {
-      dispatch(
-        setFavoriteAction(
-          filmId,
-          isInFavoriteList ? FavoriteFilms.Remove : FavoriteFilms.Add));
-      setIsInFavoriteList(!isInFavoriteList);
-    } else {
-      history.push(AppRoute.SignIn);
+  const handleFavoriteClick = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    if (authorizationStatus === AuthorizationStatus.NoAuth) {
+      dispatch(<Redirect to={AppRoute.SignIn} />);
+      return;
     }
+    setIsInFavoriteList(!isInFavoriteList);
+    dispatch(
+      setFavoriteAction(
+        film.id,
+        isInFavoriteList ? FavoriteFilms.Remove : FavoriteFilms.Add));
   };
 
   return (
@@ -44,3 +40,5 @@ export default function MyListButton(): JSX.Element {
     </button>
   );
 }
+
+export default memo(MyListButton);

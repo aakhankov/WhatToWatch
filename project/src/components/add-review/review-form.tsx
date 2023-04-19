@@ -1,9 +1,10 @@
 import React from 'react';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-// import { useParams } from 'react-router-dom';
-import { sendReview, ThunkAppDispatch } from '../../store/actions-api';
-import { State } from '../../store/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { sendReview } from '../../store/actions-api';
+import { getCurrentFilm } from '../../store/selectors';
 
 export type ReviewPost = {
   id: number;
@@ -16,33 +17,27 @@ export type ReviewPost = {
   comment: string;
 };
 
+export type ReviewRC = {
+  rating: number;
+  comment: string;
+};
+
 const DEFAULT_RATING = 0;
 const MAX_RATING = 10;
 const MIN_LENGTH = 50;
 const MAX_LENGTH = 400;
 
-const mapStateToProps = ({ currentFilms, reviews }: State) => ({
-  currentFilms,
-  reviews,
-});
-
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  sendReview(id: number, data: ReviewPost) {
-    return dispatch(sendReview(id, data));
-  },
-});
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-function ReviewForm({ currentFilms, reviews }: PropsFromRedux): JSX.Element {
-  // const { id }: {id: string} = useParams();
-  // const filmId = Number(id);
-
+export default function ReviewForm(): JSX.Element {
+  const currentFilms = useSelector(getCurrentFilm);
   const [userInput, setUserInput] = useState('');
   const [rating, setRating] = useState(DEFAULT_RATING);
   const [isFormSending, setIsFormSending] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const sendComment = (id: number, data: ReviewRC) =>
+    dispatch(sendReview(id, data));
 
   useEffect(() => {
     const isRatingValid = rating > DEFAULT_RATING;
@@ -55,9 +50,22 @@ function ReviewForm({ currentFilms, reviews }: PropsFromRedux): JSX.Element {
     setRating(+evt.currentTarget.value);
   };
 
+  const { id }: { id: string } = useParams();
+  const filmId = Number(id);
+  const currentMovie = currentFilms.find((film) => film.id === Number(id));
+  const filmIdNum = currentMovie?.id || 0;
+
   const handleSubmit = (evt: FormEvent) => {
     evt.preventDefault();
+
+    const postData = {
+      rating: rating,
+      comment: userInput,
+    };
+
     setIsFormSending(true);
+    sendComment(filmIdNum, postData);
+    history.push(AppRoute.Film.replace(':id', `${filmId}`));
   };
 
   return (
@@ -67,7 +75,6 @@ function ReviewForm({ currentFilms, reviews }: PropsFromRedux): JSX.Element {
           <div className="rating__stars">
             {new Array(10).fill(null).map((_, index) => {
               const ratingValue = MAX_RATING - index;
-
               return (
                 <React.Fragment key={ratingValue}>
                   <input
@@ -114,5 +121,3 @@ function ReviewForm({ currentFilms, reviews }: PropsFromRedux): JSX.Element {
     </div>
   );
 }
-
-export default connector(ReviewForm);

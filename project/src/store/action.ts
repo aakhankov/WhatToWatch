@@ -1,7 +1,8 @@
 import { Film } from '../components/film-card/film-card';
 import { AuthorizationStatus } from '../const';
-import { FilmReviewProps } from '../components/tabs/tab-reviews/tab-reviews';
+import { ReviewPost } from '../components/add-review/review-form';
 import { createAction } from '@reduxjs/toolkit';
+
 export enum ActionType {
   ChangeGenre = 'films/changeGenre',
   FilterFilms = 'films/filterFilms',
@@ -14,6 +15,8 @@ export enum ActionType {
   LoadFavorite = 'user/loadFavorite',
   AddFavorite = 'user/addFavorite',
   RemoveFavorite = 'user/removeFavorite',
+  LoadPromo = 'data/loadPromo',
+  UpdatePromo = 'user/updatePromo',
 }
 
 export type Actions =
@@ -26,18 +29,25 @@ export type Actions =
   | ReturnType<typeof loadReviews>
   | ReturnType<typeof addFavorite>
   | ReturnType<typeof removeFavorite>
-  | ReturnType<typeof loadFavorite>;
+  | ReturnType<typeof loadFavorite>
+  | ReturnType<typeof redirectToRoute>
+  | ReturnType<typeof loadPromo>
+  | ReturnType<typeof updatePromo>;
 
-export const changeGenre = (genre: string) =>
-  ({
-    type: ActionType.ChangeGenre,
-    payload: genre,
-  } as const);
-export const filterFilms = (films: Film[]) =>
-  ({
-    type: ActionType.FilterFilms,
-    payload: films,
-  } as const);
+export type ChangeGenreAction = {
+  type: ActionType.ChangeGenre;
+  payload: string;
+};
+
+export const changeGenre = (genre: string): ChangeGenreAction => ({
+  type: ActionType.ChangeGenre,
+  payload: genre,
+});
+
+export const filterFilms = createAction(
+  ActionType.FilterFilms,
+  (films: Film[]) => ({ payload: films }));
+
 export const loadFilms = (films: Film[]) =>
   ({
     type: ActionType.LoadFilms,
@@ -52,7 +62,8 @@ export const loadSimilarFilms = (films: Film[]) =>
     type: ActionType.LoadSimilarFilms,
     payload: films,
   } as const);
-export const loadReviews = (reviews: FilmReviewProps[]) =>
+
+export const loadReviews = (reviews: ReviewPost[]) =>
   ({
     type: ActionType.LoadReviews,
     payload: reviews,
@@ -60,11 +71,20 @@ export const loadReviews = (reviews: FilmReviewProps[]) =>
 export const redirectToRoute = createAction(
   ActionType.RedirectToRoute,
   (url: string) => ({ payload: url }));
-
 export const loadFavorite = createAction(
   ActionType.LoadFavorite,
   (films: Film[]) => ({ payload: films }));
 
-export const addFavorite = createAction(ActionType.AddFavorite);
+export const addFavorite = createAction(
+  ActionType.AddFavorite,
+  (films: Film[]) => ({ payload: films }));
 
 export const removeFavorite = createAction(ActionType.RemoveFavorite);
+
+export const loadPromo = createAction(ActionType.LoadPromo, (promo: Film) => ({
+  payload: promo,
+}));
+
+export const updatePromo = createAction(
+  ActionType.UpdatePromo,
+  (film: Film[]) => ({ payload: film }));

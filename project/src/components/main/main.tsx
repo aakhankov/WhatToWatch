@@ -13,17 +13,19 @@ import UserBlock from '../user-block/user-block';
 import { useHistory } from 'react-router';
 
 import { getCurrentFilm } from '../../store/selectors';
+import MyListButton from '../my-list/my-list-button';
 
 export type MainProps = {
   films: Film[];
   currentGenre: string;
 };
+
 export default function Main({ films, currentGenre }: MainProps): JSX.Element {
   const currentFilms = useSelector(getCurrentFilm);
   const [showSize, setShowSize] = useState(DEFAULT_SIZE);
   const history = useHistory();
 
-  const filmList = films
+  const filmList = currentFilms
     .filter((film) => {
       if (currentGenre === Genres.All) {
         return true;
@@ -33,13 +35,13 @@ export default function Main({ films, currentGenre }: MainProps): JSX.Element {
     .slice(0, showSize * FILM_CARD_COUNT);
 
   const shownFilms = films.slice(0, showSize * FILM_CARD_COUNT);
+
   const handleShowMoreClick = () => {
     setShowSize(() => showSize + 1);
   };
   if (!films.length) {
     return <Loading />;
   }
-
   const { id, name, genre, released, poster_image, background_image } =
     currentFilms[0];
   return (
@@ -75,7 +77,6 @@ export default function Main({ films, currentGenre }: MainProps): JSX.Element {
                 <span className="film-card__genre">{genre}</span>
                 <span className="film-card__year">{released}</span>
               </p>
-
               <div className="film-card__buttons">
                 <button
                   className="btn btn--play film-card__button"
@@ -88,15 +89,8 @@ export default function Main({ films, currentGenre }: MainProps): JSX.Element {
                   </svg>
                   <span>Play</span>
                 </button>
-                <button
-                  className="btn btn--list film-card__button"
-                  type="button"
-                >
-                  <svg viewBox="0 0 19 20" width="19" height="20">
-                    <use xlinkHref="#add"></use>
-                  </svg>
-                  <span>My list</span>
-                </button>
+
+                <MyListButton film={currentFilms[0]} />
               </div>
             </div>
           </div>
@@ -105,15 +99,23 @@ export default function Main({ films, currentGenre }: MainProps): JSX.Element {
       <div className="page-content">
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
+
           <GenreList
             films={currentFilms}
             resetGenre={() => setShowSize(DEFAULT_SIZE)}
           />
-          <FilmList films={filmList} />
-          {filmList.length === shownFilms.length && (
+
+          {currentFilms.length !== 0 ? (
+            <FilmList films={filmList} />
+          ) : (
+            <Loading />
+          )}
+
+          {filmList.length >= shownFilms.length && (
             <ShowMore onClick={handleShowMoreClick} />
           )}
         </section>
+
         <footer className="page-footer">
           <div className="logo">
             <Link to={AppRoute.Main} className="logo__link logo__link--light">

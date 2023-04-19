@@ -24,6 +24,7 @@ export enum APIRoute {
   SimilarFilms = '/films/:id/similar',
   Reviews = '/comments/:id',
   Favorites = '/favorite',
+  Promo = '/promo',
 }
 
 export enum Grade {

@@ -3,9 +3,7 @@ import { FilmProps, Film } from '../components/film-card/film-card';
 import { Genres, Grade, Time } from '../const';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-
 dayjs.extend(duration);
-
 export const adaptToClient = (film: FilmProps): Film => ({
   id: film['id'],
   name: film['name'],
@@ -33,7 +31,6 @@ export const filterFilmsByGenre = (films: Film[], genre: string): Film[] => {
   }
   return films.filter((film) => film.genre === genre);
 };
-
 export const formatDate = (date: string): string =>
   dayjs(date).format('YYYY-MM-DD');
 export const formatRunTime = (runtime: number): string =>
@@ -42,7 +39,7 @@ export const formatRemainingTime = (remainingTime: number): string => {
   const format = remainingTime >= Time.HourInSecond ? '-HH:mm:ss' : '-mm:ss';
   return dayjs.duration(remainingTime, 'seconds').format(format);
 };
-export const dateFormat = (date: string): string =>
+export const normalDate = (date: string): string =>
   dayjs(date).format('MMMM D, YYYY');
 
 export const getGrade = (rating: number): string => {

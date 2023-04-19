@@ -29,13 +29,9 @@ export const fetchFilmsAction =
 
 export const checkAuthorizationAction =
   (): ThunkActionResult => async (dispatch, _getState, api) => {
-    // try {
     await api.get(APIRoute.Login).then(() => {
       dispatch(requireAuthorization(AuthorizationStatus.Unknown));
     });
-    // } catch {
-    //   toast.error('Auth failed');
-    // }
   };
 
 export const loginAction =

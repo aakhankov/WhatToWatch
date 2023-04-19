@@ -2,46 +2,37 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const';
 import { FormEvent, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { loginAction, AuthorizationData, ThunkAppDispatch} from '../../store/actions-api';
+import { loginAction, AuthorizationData } from '../../store/actions-api';
 
 const DEFAULT_STATE: AuthorizationData = {
   login: '',
   password: '',
 };
 
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  onSubmit(authData: AuthorizationData) {
-    dispatch(loginAction(authData));
-  },
-});
-
-const connector = connect(null, mapDispatchToProps);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
+export default function SignIn(): JSX.Element {
   const [userInput, setUserInput] = useState(DEFAULT_STATE);
+
+  const dispatch = useDispatch();
+
+  const onSubmit = (authData: AuthorizationData) => {
+    dispatch(loginAction(authData));
+  };
 
   const history = useHistory();
 
   const letterCheck = /[a-zA-Z]/;
   const numberCheck = /[0-9]/;
-
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
     if (!letterCheck.test(userInput.password)) {
-      // eslint-disable-next-line no-alert
-      alert('Password must have at least one letter');
-      return;
+      return 'Password must have at least one letter';
     }
 
     if (!numberCheck.test(userInput.password)) {
-      // eslint-disable-next-line no-alert
-      alert('Password must have at least one number');
-      return;
+      return 'Password must have at least one number';
     }
 
     if (userInput.login !== '' && userInput.password !== '') {
@@ -49,7 +40,6 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
       history.push(AppRoute.Main);
     }
   };
-
   return (
     <div className="user-page">
       <header className="page-header user-page__head">
@@ -62,7 +52,6 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
         </div>
         <h1 className="page-title user-page__title">Sign in</h1>
       </header>
-
       <div className="sign-in user-page__content">
         <form onSubmit={handleSubmit} action="#" className="sign-in__form">
           <div className="sign-in__fields">
@@ -79,7 +68,6 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
                 name="user-email"
                 id="user-email"
               />
-
               <label
                 className="sign-in__label visually-hidden"
                 htmlFor="user-email"
@@ -100,7 +88,6 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
                 name="user-password"
                 id="user-password"
               />
-
               <label
                 className="sign-in__label visually-hidden"
                 htmlFor="user-password"
@@ -116,7 +103,6 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
           </div>
         </form>
       </div>
-
       <footer className="page-footer">
         <div className="logo">
           <Link to={AppRoute.Main} className="logo__link logo__link--light">
@@ -133,4 +119,4 @@ function SignIn({ onSubmit }: PropsFromRedux): JSX.Element {
   );
 }
 
-export default connector(SignIn);
+// export default connector(SignIn);

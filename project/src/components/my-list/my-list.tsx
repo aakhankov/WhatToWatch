@@ -1,21 +1,15 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import { logoutAction } from '../../store/actions-api';
 import { Film } from '../film-card/film-card';
 import FilmList from '../film-list/film-list';
+import UserBlock from '../user-block/user-block';
 
 type MyListProps = {
   films: Film[];
-};
+}
 
-function MyList({ films }: MyListProps): JSX.Element {
-  const dispatch = useDispatch();
-
-  const setLogout = () => {
-    dispatch(logoutAction());
-  };
+function MyList({films}:MyListProps):JSX.Element {
 
   return (
     <div className="user-page">
@@ -27,28 +21,11 @@ function MyList({ films }: MyListProps): JSX.Element {
             <span className="logo__letter logo__letter--3">W</span>
           </Link>
         </div>
-        <ul className="user-block">
-          <li className="user-block__item">
-            <div className="user-block__avatar">
-              <img
-                src="img/avatar.jpg"
-                alt="User avatar"
-                width="63"
-                height="63"
-              />
-            </div>
-          </li>
-          <li className="user-block__item">
-            <Link
-              onClick={setLogout}
-              to={AppRoute.Main}
-              className="user-block__link"
-            >
-              Sign out
-            </Link>
-          </li>
-        </ul>
+
+        <UserBlock />
+
       </header>
+
       <section className="catalog">
         <h2 className="catalog__title visually-hidden">Catalog</h2>
         <FilmList films={films} />

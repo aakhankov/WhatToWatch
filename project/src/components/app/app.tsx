@@ -39,7 +39,7 @@ export default function App(): JSX.Element {
           <SignIn />
         </Route>
         <PrivateRoute exact path={AppRoute.MyList}>
-          <MyList films={currentFilms} />
+          <MyList />
         </PrivateRoute>
 
         <Route>

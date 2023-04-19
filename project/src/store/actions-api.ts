@@ -1,5 +1,5 @@
-import { loadFilms, requireAuthorization, requireLogout } from './action';
-import { APIRoute, AuthorizationStatus } from '../const';
+import { addFavorite, loadFavorite, loadFilms, removeFavorite, requireAuthorization, requireLogout} from './action';
+import { APIRoute, AuthorizationStatus, FavoriteFilms } from '../const';
 import { AxiosInstance } from 'axios';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { toast } from 'react-toastify';
@@ -8,7 +8,6 @@ import { Film } from '../components/film-card/film-card';
 import { Actions, loadSimilarFilms, loadReviews } from './action';
 import { dropToken, saveToken, Token } from '../services/token';
 import { FilmReviewProps } from '../components/tabs/tab-reviews/tab-reviews';
-
 export type AuthorizationData = {
   login: string;
   password: string;
@@ -26,14 +25,12 @@ export const fetchFilmsAction =
       const { data } = await api.get<Film[]>(APIRoute.Films);
       dispatch(loadFilms(data));
     };
-
 export const checkAuthorizationAction =
   (): ThunkActionResult => async (dispatch, _getState, api) => {
     await api.get(APIRoute.Login).then(() => {
       dispatch(requireAuthorization(AuthorizationStatus.Unknown));
     });
   };
-
 export const loginAction =
   ({ login: email, password }: AuthorizationData): ThunkActionResult =>
     async (dispatch, _getState, api) => {
@@ -49,7 +46,6 @@ export const logoutAction =
     dropToken();
     dispatch(requireLogout());
   };
-
 export const fetchSimilarFilmsAction =
   (filmId: number): ThunkActionResult =>
     async (dispatch, _getState, api): Promise<void> => {
@@ -58,7 +54,6 @@ export const fetchSimilarFilmsAction =
       );
       dispatch(loadSimilarFilms(data));
     };
-
 export const fetchReviewsAction =
   (filmId: number): ThunkActionResult =>
     async (dispatch, _getState, api): Promise<void> => {
@@ -67,7 +62,6 @@ export const fetchReviewsAction =
       );
       dispatch(loadReviews(data));
     };
-
 export const sendReview =
   (filmId: number, review: FilmReviewProps): ThunkActionResult =>
     async (dispatch, _getState, api): Promise<void> => {
@@ -79,5 +73,25 @@ export const sendReview =
         dispatch(loadReviews(data));
       } catch {
         toast.error('Sending failed');
+      }
+    };
+
+export const fetchFavoriteFilms =
+  (): ThunkActionResult =>
+    async (dispatch, _getState, api): Promise<void> => {
+      const { data } = await api.get<Film[]>(APIRoute.Favorites);
+      dispatch(loadFavorite(data));
+    };
+
+export const setFavoriteAction =
+  (filmId: number, action: FavoriteFilms): ThunkActionResult =>
+    async (dispatch, _getState, api): Promise<void> => {
+      await api.post<Film>(`${APIRoute.Favorites}/${filmId}/${action}`);
+
+      if (action === FavoriteFilms.Add) {
+        dispatch(addFavorite());
+      }
+      if (action === FavoriteFilms.Remove) {
+        dispatch(removeFavorite());
       }
     };

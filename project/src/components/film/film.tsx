@@ -2,13 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
-
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { Film } from '../film-card/film-card';
 import TabReviews, { FilmReviewProps } from '../tabs/tab-reviews/tab-reviews';
 import { fetchFilmsAction } from '../../store/actions-api';
 import SimilarFilms from './similar-films';
-
 import TabDetails from '../tabs/tab-details/tab-details';
 import TabOverview from '../tabs/tab-overview/tab-overview';
 import Loading from '../loading/loading';
@@ -16,13 +14,13 @@ import Error from '../error/error';
 import UserBlock from '../user-block/user-block';
 
 import { getAuthorizationStatus, getCurrentFilm, getReviews, getSimilarFilms, getSimilarFilmsLoading} from '../../store/selectors';
+import MyListButton from '../my-list/my-list-button';
 
 export type FilmOverviewProps = {
   films: Film[];
   reviews: FilmReviewProps[];
   id: number;
 };
-
 export default function FilmPage(): JSX.Element {
   const currentFilms = useSelector(getCurrentFilm);
   const authorizationStatus = useSelector(getAuthorizationStatus);
@@ -30,33 +28,25 @@ export default function FilmPage(): JSX.Element {
   const similarFilms = useSelector(getSimilarFilms);
   const similarFilmsLoading = useSelector(getSimilarFilmsLoading);
   const dispatch = useDispatch();
-
   const getFilm = (currentFilmId: number) => {
     dispatch(fetchFilmsAction());
   };
-
   const { id }: { id: string } = useParams();
   const filmId = Number(id);
   const currentMovie = currentFilms.find((film) => film.id === Number(id));
-
   useEffect(() => {
     if (currentMovie?.id !== filmId) {
       getFilm(filmId);
     }
   });
-
   const history = useHistory();
-
   const [activeTab, setActiveTab] = useState('Overview');
-
   if (!currentMovie) {
     return <Error />;
   }
-
   if (currentMovie?.id !== filmId) {
     return <Loading />;
   }
-
   const { name, background_image, genre, released, poster_image } =
     currentMovie as Film;
   const renderActiveTab = (tab: string) => {
@@ -85,10 +75,8 @@ export default function FilmPage(): JSX.Element {
                 <span className="logo__letter logo__letter--3">W</span>
               </Link>
             </div>
-
             <UserBlock />
           </header>
-
           <div className="film-card__wrap">
             <div className="film-card__desc">
               <h2 className="film-card__title">{name}</h2>
@@ -108,15 +96,9 @@ export default function FilmPage(): JSX.Element {
                   </svg>
                   <span>Play</span>
                 </button>
-                <button
-                  className="btn btn--list film-card__button"
-                  type="button"
-                >
-                  <svg viewBox="0 0 19 20" width="19" height="20">
-                    <use xlinkHref="#add"></use>
-                  </svg>
-                  <span>My list</span>
-                </button>
+
+                <MyListButton />
+
                 {authorizationStatus === AuthorizationStatus.Auth && (
                   <Link
                     className="btn film-card__button"

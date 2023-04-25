@@ -1,46 +1,44 @@
-# Личный проект «Что посмотреть»
+# What to Watch?
 
----
+*Online cinema*
 
-_Не удаляйте и не изменяйте папки и файлы:_
-_`.editorconfig`, `.gitattributes`, `.gitignore`._
+## Project features
+* The application consists of 6 pages: `Main (/)`, `Sign In (/login)`, `MyList (/mylist)`, `Film (/films/:id)`, `Add review (/films/:id/review)`, `Player (/player/:id)`.
+* The `MyList` and `Add review` pages are only available to authorized users. If the user is not authorized, they will be redirected to the `Sign In` page when accessing these pages.
+* To log in to the application, it is sufficient to enter a random valid `email` and `password` (must contain at least one lowercase, one uppercase Latin letter, and one digit)
+* When accessing a non-existent page, the user is redirected to the `«404 page»`.
+* When hovering over and holding the mouse cursor on the movie image, a video preview of the movie starts playing instead of the image.
+* Adding a new review is done by clicking the `«Add review»` button. The button is only displayed for authorized users.
+* To submit a movie review, you need to rate the movie from `1 to 10`, and the review text must be at least `50` and no more than `400` characters.
+* Adding to the `«Watchlist»` is done by clicking the `«+ MyList» button`. Clicking on the user's avatar takes the user to the `MyList` page.
+* Clicking the `«Play»` button starts playing the movie. Stopping, starting, and rewinding the movie is done by clicking on the progress bar or dragging the slider, going to `fullscreen`.
+*During content loading, loaders are implemented, and in case of server errors, popup notifications are implemented.
+## Technical features
+* Functional components are implemented using hooks.
+* `React router` is used for routing.
+* `Redux` is used for global state management. Asynchronous actions are implemented using `redux-thunk` middleware.
+* Memoization is used to optimize components (with `React.memo()` method, `useMemo` and `useCallback` hooks, `reselect` library).
+* All components are covered by tests using the `Jest` framework.
 
----
+---------------------------
 
-### Памятка
+# Что Посмотреть? 
+*Онлайн кинотеатр*
 
-#### 1. Зарегистрируйтесь на Гитхабе
-
-Если у вас ещё нет аккаунта на [github.com](https://github.com/join), скорее зарегистрируйтесь.
-
-#### 2. Создайте форк
-
-Откройте репозиторий и нажмите кнопку «Fork» в правом верхнем углу. Репозиторий из Академии будет скопирован в ваш аккаунт.
-
-<img width="769" alt="Press 'Fork'" src="https://cloud.githubusercontent.com/assets/259739/20264045/a1ddbf40-aa7a-11e6-9a1a-724a1c0123c8.png">
-
-Получится вот так:
-
-<img width="769" alt="Forked" src="https://cloud.githubusercontent.com/assets/259739/20264122/f63219a6-aa7a-11e6-945a-89818fc7c014.png">
-
-#### 3. Клонируйте репозиторий на свой компьютер
-
-Будьте внимательны: нужно клонировать свой репозиторий (форк), а не репозиторий Академии. Также обратите внимание, что клонировать репозиторий нужно через SSH, а не через HTTPS. Нажмите зелёную кнопку в правой части экрана, чтобы скопировать SSH-адрес вашего репозитория:
-
-<img width="769" alt="SSH" src="https://cloud.githubusercontent.com/assets/259739/20264180/42704126-aa7b-11e6-9ab4-73372b812a53.png">
-
-Клонировать репозиторий можно так:
-
-```
-git clone SSH-адрес_вашего_форка
-```
-
-Команда клонирует репозиторий на ваш компьютер и подготовит всё необходимое для старта работы.
-
-#### 4. Начинайте обучение!
-
----
-
-<a href="https://htmlacademy.ru/intensive/react"><img align="left" width="50" height="50" title="HTML Academy" src="https://up.htmlacademy.ru/static/img/intensive/react/logo-for-github.png"></a>
-
-Репозиторий создан для обучения на профессиональном онлайн‑курсе «[React. Разработка сложных клиентских приложений](https://htmlacademy.ru/intensive/react)» от [HTML Academy](https://htmlacademy.ru).
+## Особенности проекта
+* Приложение состоит из 6 страниц: `Main (/)`, `Sign In (/login)`, `MyList (/mylist)`, `Film (/films/:id)`, `Add review (/films/:id/review)`, `Player (/player/:id)`.
+* Страницы `MyList`, `Add review` доступны только авторизованным пользователям. Если пользователь не авторизован, то при переходе к этим страницам выполняется перенаправление на страницу `Sign In`.
+* Для логина в приложение достаточно ввести рандомные валидные `email`  и `password` (должен содержать минимум одну строчную, одну заглавную латинские буквы и одну цифру)
+* При обращении к несуществующей странице пользователь перенаправляется на страницу `«404»`.
+* При наведении и удержании курсора мыши на изображении фильма, вместо изображения начинает воспроизводиться видео-превью фильма
+* Добавление нового отзыва выполняется по кнопке `«Add review»`. Кнопка отображается только для авторизованных пользователей
+* Для отправки комментария к фильму необходимо выставить оценку фильма от `1 до 10`, а текст отзыва должен быть не меньше `50` и не больше `400` символов
+* Добавление в список `«К просмотру»` осуществляется при нажатии на кнопку `«+ MyList»`. Клик по аватарке пользователя выполняет переход на страницу `MyList`
+* При нажатии на кнопку `«Play»` запускается проигрывание фильма. Реализована остановка, запуск, перемотка фильма по клику на прогресс бар, а также методом перетаскивания ползунка, переход в `fullscreen`
+* Во время ожидания загрузки контента реализованы лоадеры, а в случае возникновения ошибок на сервере реализованы всплывающие уведомления
+## Технические особенности
+* В проекте реализованы функциональные компоненты с использование хуков
+* Для маршрутизации используется `react router`
+* Для глобального хранения состояния используется `redux`. Асинхронные действия реализованы при помощи middleware `redux-thunk`
+* Для оптимизации компонентов применяется мемоизация (методом `React.memo()`, хуками `useMemo` и `useCallback`, библиотекой `reselect`)
+* Все компоненты покрыты тестами с использованием фреймворка `Jest`
